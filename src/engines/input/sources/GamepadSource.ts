@@ -5,7 +5,7 @@ import { applyDeadzone, clamp } from '../utils'
 export interface GamepadSourceOptions {
   /** Index of the gamepad to monitor. Defaults to the first gamepad (0). */
   readonly index?: number
-  /** Deadzone applied to stick axes. Defaults to `0.1`. */
+  /** Deadzone applied to stick axes. Defaults to `0`. */
   readonly deadzone?: number
   /** Callback receiving look deltas from the right stick. */
   readonly onLook?: (deltaX: number, deltaY: number) => void
@@ -55,7 +55,7 @@ export class GamepadSource implements InputSource {
 
   constructor(options: GamepadSourceOptions = {}) {
     this.index = options.index ?? 0
-    this.deadzone = options.deadzone ?? 0.1
+    this.deadzone = options.deadzone ?? 0
     this.onLook = options.onLook
   }
 
