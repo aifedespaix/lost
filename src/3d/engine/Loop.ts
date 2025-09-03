@@ -70,10 +70,10 @@ export class Loop {
       while (this.accumulator >= this.step) {
         for (const update of this.updates)
           update(this.step, elapsed)
-        for (const render of this.renders)
-          render(this.step, elapsed)
         this.accumulator -= this.step
       }
+      for (const render of this.renders)
+        render(this.step, elapsed)
     }
     else {
       for (const update of this.updates)
