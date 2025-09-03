@@ -19,7 +19,7 @@ const localesMap = Object.fromEntries(
 
 export const availableLocales = Object.keys(localesMap)
 
-const loadedLanguages: string[] = []
+const loadedLanguages: Locale[] = []
 
 function setI18nLanguage(lang: Locale) {
   i18n.global.locale.value = lang as any
@@ -28,17 +28,18 @@ function setI18nLanguage(lang: Locale) {
   return lang
 }
 
-export async function loadLanguageAsync(lang: string): Promise<Locale> {
-  // If the same language
+export async function loadLanguageAsync(lang: Locale): Promise<Locale> {
   if (i18n.global.locale.value === lang)
     return setI18nLanguage(lang)
 
-  // If the language was already loaded
   if (loadedLanguages.includes(lang))
     return setI18nLanguage(lang)
 
-  // If the language hasn't been loaded yet
-  const messages = await localesMap[lang]()
+  const loader = localesMap[lang]
+  if (!loader)
+    throw new Error(`Locale "${lang}" is not available`)
+
+  const messages = await loader()
   i18n.global.setLocaleMessage(lang, messages.default)
   loadedLanguages.push(lang)
   return setI18nLanguage(lang)

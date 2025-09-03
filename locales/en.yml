@@ -1,0 +1,14 @@
+button:
+  about: About
+  back: Back
+  go: Try
+  home: Home
+  toggle_dark: Toggle dark mode
+  toggle_langs: Change languages
+intro:
+  desc: Vite app example
+  dynamic-route: Dynamic route demo
+  hi: Hi, {name}!
+  aka: Also known as
+  whats-your-name: What's your name?
+not-found: Page not found
