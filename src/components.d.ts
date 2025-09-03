@@ -12,6 +12,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     ThreeCanvas: typeof import('./components/three-canvas/index.vue')['default']
     Ui: typeof import('./components/Ui.vue')['default']
+    UiHudCrosshair: typeof import('./components/ui/hud/Crosshair.vue')['default']
+    UiHudInputHints: typeof import('./components/ui/hud/InputHints.vue')['default']
     UiInputActionButtons: typeof import('./components/ui/input/ActionButtons.vue')['default']
     UiInputVirtualStick: typeof import('./components/ui/input/VirtualStick.vue')['default']
   }
