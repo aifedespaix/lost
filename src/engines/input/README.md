@@ -22,9 +22,17 @@ read inputs without risk of mutation.
 ## API
 
 - `start()` / `stop()` — control all registered sources.
-- `snapshot()` — returns the current immutable {@link InputState}.
+- `snapshot()` — polls sources and returns the current immutable {@link InputState}.
 - `onAction(action, cb)` — observe transitions for a specific action.
 - `registerSource(source)` — plug in a new device input translator.
+
+## Input Sources
+
+An `InputSource` exposes three methods:
+
+- `attach(emit)` — begin listening to the underlying device and queue events.
+- `detach()` — remove listeners and clear internal state.
+- `poll()` — flush queued events through the `emit` callback.
 
 Sources are intentionally decoupled from the engine so new devices can be
 supported without modifying existing logic.

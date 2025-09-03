@@ -5,12 +5,13 @@ import { Action, type InputSource } from '~/engines/input/types'
 describe('InputEngine', () => {
   class MockSource implements InputSource {
     private emit: ((action: Action, pressed: boolean) => void) | null = null
-    start(emit: (action: Action, pressed: boolean) => void): void {
+    attach(emit: (action: Action, pressed: boolean) => void): void {
       this.emit = emit
     }
-    stop(): void {
+    detach(): void {
       this.emit = null
     }
+    poll(): void {}
     trigger(action: Action, pressed: boolean): void {
       this.emit?.(action, pressed)
     }
