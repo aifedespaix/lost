@@ -45,6 +45,7 @@ export class GameEngine {
 
   private visibilityHandler: () => void
   private started = false
+  private loopConfigured = false
 
   constructor(options: GameEngineOptions) {
     const {
@@ -97,20 +98,23 @@ export class GameEngine {
   }
 
   start(): void {
+    document.addEventListener('visibilitychange', this.visibilityHandler)
+    this.resizeHandler.attach(this)
     if (this.started) {
       this.loop.resume()
       return
     }
+    if (!this.loopConfigured) {
+      this.loop.onUpdate((dt, elapsed) => {
+        for (const system of this.systems)
+          system(dt, elapsed)
+      })
+      this.loop.onRender(() => {
+        this.renderer.render(this.scene, this.camera)
+      })
+      this.loopConfigured = true
+    }
     this.started = true
-    this.loop.onUpdate((dt, elapsed) => {
-      for (const system of this.systems)
-        system(dt, elapsed)
-    })
-    this.loop.onRender(() => {
-      this.renderer.render(this.scene, this.camera)
-    })
-    document.addEventListener('visibilitychange', this.visibilityHandler)
-    this.resizeHandler.attach(this)
     this.loop.start()
   }
 
@@ -118,6 +122,7 @@ export class GameEngine {
     this.loop.stop()
     document.removeEventListener('visibilitychange', this.visibilityHandler)
     this.resizeHandler.detach()
+    this.started = false
   }
 
   dispose(): void {
