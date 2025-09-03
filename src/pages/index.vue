@@ -1,14 +1,12 @@
 <script setup lang="ts">
-defineOptions({
-  name: 'IndexPage',
-  layout: 'game',
-})
+import DebugOverlay from '~/dev/DebugOverlay.vue'
+
+const showDebug = import.meta.env.DEV
 </script>
 
 <template>
-  <div>
-    hhxx
-  </div>
+  <ThreeCanvas background="#0e0e12" :show-helpers="true" />
+  <DebugOverlay v-if="showDebug" />
 </template>
 
 <route lang="yaml">
