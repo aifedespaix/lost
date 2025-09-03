@@ -11,16 +11,37 @@ export interface ResizableEngine {
 export class ResizeHandler {
   private engine?: ResizableEngine
   private readonly onResize = () => this.resize()
+  private readonly onDprChange = () => {
+    this.resize()
+    this.setupDprListener()
+  }
+
+  private dprQuery?: MediaQueryList
 
   attach(engine: ResizableEngine): void {
     this.engine = engine
     window.addEventListener('resize', this.onResize)
+    this.setupDprListener()
     this.resize()
   }
 
   detach(): void {
     window.removeEventListener('resize', this.onResize)
+    if (this.dprQuery)
+      this.dprQuery.removeEventListener('change', this.onDprChange)
+    this.dprQuery = undefined
     this.engine = undefined
+  }
+
+  private setupDprListener(): void {
+    if (!window.matchMedia)
+      return
+
+    if (this.dprQuery)
+      this.dprQuery.removeEventListener('change', this.onDprChange)
+
+    this.dprQuery = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+    this.dprQuery.addEventListener('change', this.onDprChange)
   }
 
   private resize(): void {
