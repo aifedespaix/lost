@@ -10,6 +10,12 @@ import {
   WebGLRenderer,
 } from 'three'
 
+import { FpsCamera } from '~/ecs/components/FpsCamera'
+import { CharacterController } from '~/ecs/components/CharacterController'
+import { createFpsLookSystem } from '~/ecs/systems/FpsLookSystem'
+import { createFpsMoveSystem } from '~/ecs/systems/FpsMoveSystem'
+import { InputEngine } from '~/engines/input/InputEngine'
+
 import { createMainCamera } from '~/3d/engine/cameras/MainCamera'
 import { createDefaultLights } from '~/3d/engine/lights/DefaultLights'
 import { Loop } from '~/3d/engine/Loop'
@@ -42,6 +48,9 @@ export class GameEngine {
   private readonly resizeHandler: ResizeHandler
   private readonly helpers: Group
   private readonly systems = new Set<System>()
+  private readonly inputEngine: InputEngine
+  private readonly fpsCamera: FpsCamera
+  private readonly characterController: CharacterController
 
   private visibilityHandler: () => void
   private started = false
@@ -89,6 +98,22 @@ export class GameEngine {
     createDefaultLights(this.scene, { helpers: this.helpers })
     createBaseScene(this.scene, { helpers: this.helpers })
 
+    this.inputEngine = new InputEngine()
+    this.fpsCamera = new FpsCamera()
+    this.characterController = new CharacterController()
+
+    this.registerSystem(createFpsLookSystem({
+      input: this.inputEngine,
+      camera: this.fpsCamera,
+      target: this.camera,
+    }))
+    this.registerSystem(createFpsMoveSystem({
+      input: this.inputEngine,
+      camera: this.fpsCamera,
+      controller: this.characterController,
+      target: this.camera,
+    }))
+
     this.visibilityHandler = () => {
       if (document.hidden)
         this.loop.pause()
@@ -115,6 +140,7 @@ export class GameEngine {
       this.loopConfigured = true
     }
     this.started = true
+    this.inputEngine.start()
     this.loop.start()
   }
 
@@ -123,6 +149,7 @@ export class GameEngine {
     document.removeEventListener('visibilitychange', this.visibilityHandler)
     this.resizeHandler.detach()
     this.started = false
+    this.inputEngine.stop()
   }
 
   dispose(): void {
@@ -161,5 +188,20 @@ export class GameEngine {
 
   getLoadingManager(): LoadingManager {
     return this.loadingManager
+  }
+
+  /** Input engine used for player interactions. */
+  getInputEngine(): InputEngine {
+    return this.inputEngine
+  }
+
+  /** First-person camera orientation component. */
+  getFpsCamera(): FpsCamera {
+    return this.fpsCamera
+  }
+
+  /** Character controller component representing player movement configuration. */
+  getCharacterController(): CharacterController {
+    return this.characterController
   }
 }
