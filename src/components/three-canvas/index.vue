@@ -8,6 +8,8 @@ const props = defineProps<{
 }>()
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 let engine: GameEngine | undefined
+// Flag indicating when the Three.js engine is ready so child content can render.
+const isReady = ref<boolean>(false)
 
 onMounted(() => {
   if (!canvasEl.value)
@@ -22,6 +24,7 @@ onMounted(() => {
   })
   provideThreeEngine(engine)
   engine.start()
+  isReady.value = true
 })
 
 onBeforeUnmount(() => {
@@ -32,7 +35,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="three-canvas-container">
     <canvas ref="canvasEl" class="three-canvas" />
-    <slot />
+    <slot v-if="isReady" />
   </div>
 </template>
 

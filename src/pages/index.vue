@@ -5,8 +5,9 @@ const showDebug = import.meta.env.DEV
 </script>
 
 <template>
-  <ThreeCanvas background="#0e0e12" :show-helpers="true" />
-  <DebugOverlay v-if="showDebug" />
+  <ThreeCanvas background="#0e0e12" :show-helpers="true">
+    <DebugOverlay v-if="showDebug" />
+  </ThreeCanvas>
 </template>
 
 <route lang="yaml">
