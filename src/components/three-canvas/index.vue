@@ -7,6 +7,7 @@ const props = defineProps<{
   showHelpers?: boolean
 }>()
 const canvasEl = ref<HTMLCanvasElement | null>(null)
+const { isLocked, requestLock, exitLock } = usePointerLock(canvasEl)
 let engine: GameEngine | undefined
 // Flag indicating when the Three.js engine is ready so child content can render.
 const isReady = ref<boolean>(false)
@@ -30,11 +31,16 @@ onMounted(() => {
 onBeforeUnmount(() => {
   engine?.dispose()
 })
+
+useEventListener(window, 'keydown', (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && isLocked.value)
+    exitLock()
+})
 </script>
 
 <template>
   <div class="three-canvas-container">
-    <canvas ref="canvasEl" class="three-canvas" />
+    <canvas ref="canvasEl" class="three-canvas" @click="requestLock" />
     <slot v-if="isReady" />
   </div>
 </template>
