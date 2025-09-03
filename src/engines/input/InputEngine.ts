@@ -20,7 +20,7 @@ export class InputEngine {
       return
     this.running = true
     for (const source of this.sources)
-      source.start(this.handleInput)
+      source.attach(this.handleInput)
   }
 
   /** Stop all registered input sources. */
@@ -29,7 +29,7 @@ export class InputEngine {
       return
     this.running = false
     for (const source of this.sources)
-      source.stop()
+      source.detach()
   }
 
   /**
@@ -37,6 +37,8 @@ export class InputEngine {
    * Each call produces a new frozen object to avoid shared mutations.
    */
   snapshot(): InputState {
+    for (const source of this.sources)
+      source.poll()
     const actions = Object.freeze({ ...this.actions }) as Readonly<Record<Action, boolean>>
     return Object.freeze({ actions })
   }
@@ -66,7 +68,7 @@ export class InputEngine {
   registerSource(source: InputSource): void {
     this.sources.add(source)
     if (this.running)
-      source.start(this.handleInput)
+      source.attach(this.handleInput)
   }
 
   private readonly handleInput = (action: Action, pressed: boolean): void => {
