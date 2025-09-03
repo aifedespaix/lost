@@ -1,48 +1,18 @@
 <script setup lang="ts">
 /**
- * Centered minimal crosshair reticle for the heads-up display.
+ * Minimal dual-axis reticle rendered at the center of the screen.
  *
- * Purely visual; emits no events and captures no input.
+ * Purely decorative; it does not react to input or emit events.
  */
 </script>
 
 <template>
-  <div class="crosshair">
-    <div class="line horizontal" />
-    <div class="line vertical" />
+  <div class="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+    <!-- vertical arms -->
+    <span class="absolute top-0 left-1/2 h-2 w-px -translate-x-1/2 bg-white/40" />
+    <span class="absolute bottom-0 left-1/2 h-2 w-px -translate-x-1/2 bg-white/40" />
+    <!-- horizontal arms -->
+    <span class="absolute left-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/40" />
+    <span class="absolute right-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/40" />
   </div>
 </template>
-
-<style scoped>
-.crosshair {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 20px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.line {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.horizontal {
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  transform: translateY(-50%);
-}
-
-.vertical {
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  transform: translateX(-50%);
-}
-</style>
-
