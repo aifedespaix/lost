@@ -9,8 +9,3 @@ const showDebug = import.meta.env.DEV
     <DebugOverlay v-if="showDebug" />
   </ThreeCanvas>
 </template>
-
-<route lang="yaml">
-meta:
-  layout: game
-</route>
