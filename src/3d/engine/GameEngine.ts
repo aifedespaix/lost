@@ -1,0 +1,160 @@
+import type { LoadingManager, PerspectiveCamera } from 'three'
+import {
+  ACESFilmicToneMapping,
+  Clock,
+  Color,
+  Group,
+  PCFSoftShadowMap,
+  Scene,
+  SRGBColorSpace,
+  WebGLRenderer,
+} from 'three'
+
+import { createMainCamera } from '~/3d/engine/cameras/MainCamera'
+import { createDefaultLights } from '~/3d/engine/lights/DefaultLights'
+import { Loop } from '~/3d/engine/Loop'
+import { ResizeHandler } from '~/3d/engine/ResizeHandler'
+import { createLoadingManager } from '~/3d/loaders/loading'
+import { createBaseScene } from '~/3d/scene/createBaseScene'
+import { disposeObject3D, disposeRenderer } from '~/3d/utils/dispose'
+
+export interface GameEngineOptions {
+  canvas: HTMLCanvasElement
+  width: number
+  height: number
+  antialias?: boolean
+  background?: string | number
+  showHelpers?: boolean
+}
+
+export type System = (dt: number, elapsed: number) => void
+
+/**
+ * GameEngine orchestrates the Three.js rendering pipeline and lifecycle.
+ */
+export class GameEngine {
+  private readonly renderer: WebGLRenderer
+  private readonly scene: Scene
+  private readonly camera: PerspectiveCamera
+  private readonly clock: Clock
+  private readonly loop: Loop
+  private readonly loadingManager: LoadingManager
+  private readonly resizeHandler: ResizeHandler
+  private readonly helpers: Group
+  private readonly systems = new Set<System>()
+
+  private visibilityHandler: () => void
+  private started = false
+
+  constructor(options: GameEngineOptions) {
+    const {
+      canvas,
+      width,
+      height,
+      antialias = true,
+      background,
+      showHelpers = false,
+    } = options
+
+    this.renderer = new WebGLRenderer({ canvas, antialias })
+    const rendererConfig = this.renderer as unknown as {
+      physicallyCorrectLights?: boolean
+      useLegacyLights?: boolean
+    }
+    if ('useLegacyLights' in rendererConfig)
+      rendererConfig.useLegacyLights = false
+    else
+      rendererConfig.physicallyCorrectLights = true
+    this.renderer.outputColorSpace = SRGBColorSpace
+    this.renderer.toneMapping = ACESFilmicToneMapping
+    this.renderer.shadowMap.enabled = true
+    this.renderer.shadowMap.type = PCFSoftShadowMap
+    this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
+    this.renderer.setSize(width, height)
+
+    if (background !== undefined)
+      this.renderer.setClearColor(new Color(background))
+
+    this.scene = new Scene()
+    this.camera = createMainCamera()
+    this.clock = new Clock()
+    this.loop = new Loop({}, this.clock)
+    this.loadingManager = createLoadingManager()
+    this.resizeHandler = new ResizeHandler()
+    this.helpers = new Group()
+    this.helpers.visible = showHelpers
+    this.scene.add(this.helpers)
+
+    createDefaultLights(this.scene, { helpers: this.helpers })
+    createBaseScene(this.scene, { helpers: this.helpers })
+
+    this.visibilityHandler = () => {
+      if (document.hidden)
+        this.loop.pause()
+      else
+        this.loop.resume()
+    }
+  }
+
+  start(): void {
+    if (this.started) {
+      this.loop.resume()
+      return
+    }
+    this.started = true
+    this.loop.onUpdate((dt, elapsed) => {
+      for (const system of this.systems)
+        system(dt, elapsed)
+    })
+    this.loop.onRender(() => {
+      this.renderer.render(this.scene, this.camera)
+    })
+    document.addEventListener('visibilitychange', this.visibilityHandler)
+    this.resizeHandler.attach(this)
+    this.loop.start()
+  }
+
+  stop(): void {
+    this.loop.stop()
+    document.removeEventListener('visibilitychange', this.visibilityHandler)
+    this.resizeHandler.detach()
+  }
+
+  dispose(): void {
+    this.stop()
+    disposeObject3D(this.scene)
+    disposeRenderer(this.renderer)
+  }
+
+  registerSystem(system: System): void {
+    this.systems.add(system)
+  }
+
+  unregisterSystem(system: System): void {
+    this.systems.delete(system)
+  }
+
+  setHelpersVisible(visible: boolean): void {
+    this.helpers.visible = visible
+  }
+
+  getScene(): Scene {
+    return this.scene
+  }
+
+  getCamera(): PerspectiveCamera {
+    return this.camera
+  }
+
+  getRenderer(): WebGLRenderer {
+    return this.renderer
+  }
+
+  getClock(): Clock {
+    return this.clock
+  }
+
+  getLoadingManager(): LoadingManager {
+    return this.loadingManager
+  }
+}
