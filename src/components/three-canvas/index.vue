@@ -30,7 +30,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <canvas ref="canvasEl" class="three-canvas" />
+  <div class="three-canvas-container">
+    <canvas ref="canvasEl" class="three-canvas" />
+    <slot />
+  </div>
 </template>
 
 <style src="~/styles/three.css"></style>
