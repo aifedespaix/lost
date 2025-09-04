@@ -18,7 +18,7 @@ function press(action: 'jump' | 'interact' | 'crouch' | 'sprint', pressed: boole
 </script>
 
 <template>
-  <div class="action-buttons">
+  <div class="action-buttons pointer-events-auto">
     <button
       class="action-button"
       @touchstart.prevent="press('jump', true)"
