@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { GameEngine } from '~/3d/engine/GameEngine'
+import { GameEngine } from '~/engines/graphics/GameEngine'
 
 vi.mock('three', async () => {
   const actual = await vi.importActual<typeof import('three')>('three')

@@ -1,4 +1,4 @@
-import type { GameEngine } from '~/3d/engine/GameEngine'
+import type { GameEngine } from '~/engines/graphics/GameEngine'
 
 const THREE_ENGINE_KEY = Symbol('ThreeEngine') as InjectionKey<GameEngine>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GameEngine } from '~/3d/engine/GameEngine'
+import { GameEngine } from '~/engines/graphics/GameEngine'
 
 const props = defineProps<{
   antialias?: boolean

@@ -1,6 +1,6 @@
 import type { PerspectiveCamera, WebGLRenderer } from 'three'
 import { describe, expect, it, vi } from 'vitest'
-import { ResizeHandler } from '~/3d/engine/ResizeHandler'
+import { ResizeHandler } from '~/engines/graphics/ResizeHandler'
 
 describe('resize handler', () => {
   it('updates renderer size, camera aspect and reacts to DPR changes', () => {

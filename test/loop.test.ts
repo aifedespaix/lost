@@ -1,6 +1,6 @@
 import type { Clock } from 'three'
 import { describe, expect, it, vi } from 'vitest'
-import { Loop } from '~/3d/engine/Loop'
+import { Loop } from '~/engines/graphics/Loop'
 
 describe('loop', () => {
   it('calls render once per frame in fixed-step mode', () => {
