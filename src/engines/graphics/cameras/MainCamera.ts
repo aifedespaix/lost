@@ -4,8 +4,12 @@ export interface MainCameraOptions {
   fov?: number
   near?: number
   far?: number
+  /** Initial camera position. Defaults to a neutral standing height. */
   position?: Vector3
-  target?: Vector3
+  /** Initial yaw rotation in radians. */
+  yaw?: number
+  /** Initial pitch rotation in radians. */
+  pitch?: number
 }
 
 /**
@@ -16,12 +20,15 @@ export function createMainCamera(options: MainCameraOptions = {}): PerspectiveCa
     fov = 60,
     near = 0.1,
     far = 2000,
-    position = new Vector3(6, 6, 6),
-    target = new Vector3(0, 0, 0),
+    position = new Vector3(0, 1.8, 0),
+    yaw = 0,
+    pitch = 0,
   } = options
 
   const camera = new PerspectiveCamera(fov, 1, near, far)
   camera.position.copy(position)
-  camera.lookAt(target)
+  camera.rotation.order = 'YXZ'
+  camera.rotation.y = yaw
+  camera.rotation.x = pitch
   return camera
 }

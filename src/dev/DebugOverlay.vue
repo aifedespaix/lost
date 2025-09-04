@@ -34,7 +34,7 @@ requestAnimationFrame(measure)
 </script>
 
 <template>
-  <div class="debug-overlay">
+  <div class="debug-overlay pointer-events-auto">
     <button @click="togglePause">
       {{ paused ? 'Resume' : 'Pause' }}
     </button>
