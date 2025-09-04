@@ -1,6 +1,6 @@
 import type { PerspectiveCamera } from 'three'
 
-import type { System } from '~/3d/engine/GameEngine'
+import type { System } from '~/engines/graphics/GameEngine'
 import { FpsCamera } from '~/ecs/components/FpsCamera'
 import { InputEngine } from '~/engines/input/InputEngine'
 import type { InputState } from '~/engines/input/types'

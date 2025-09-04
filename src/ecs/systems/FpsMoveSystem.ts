@@ -1,7 +1,7 @@
 import type { Object3D } from 'three'
 import { Vector3 } from 'three'
 
-import type { System } from '~/3d/engine/GameEngine'
+import type { System } from '~/engines/graphics/GameEngine'
 import { CharacterController } from '~/ecs/components/CharacterController'
 import { FpsCamera } from '~/ecs/components/FpsCamera'
 import { InputEngine } from '~/engines/input/InputEngine'

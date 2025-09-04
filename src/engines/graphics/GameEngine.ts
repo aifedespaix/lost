@@ -16,13 +16,13 @@ import { createFpsLookSystem } from '~/ecs/systems/FpsLookSystem'
 import { createFpsMoveSystem } from '~/ecs/systems/FpsMoveSystem'
 import { InputEngine } from '~/engines/input/InputEngine'
 
-import { createMainCamera } from '~/3d/engine/cameras/MainCamera'
-import { createDefaultLights } from '~/3d/engine/lights/DefaultLights'
-import { Loop } from '~/3d/engine/Loop'
-import { ResizeHandler } from '~/3d/engine/ResizeHandler'
-import { createLoadingManager } from '~/3d/loaders/loading'
-import { createBaseScene } from '~/3d/scene/createBaseScene'
-import { disposeObject3D, disposeRenderer } from '~/3d/utils/dispose'
+import { createMainCamera } from '~/engines/graphics/cameras/MainCamera'
+import { createDefaultLights } from '~/engines/graphics/lights/DefaultLights'
+import { Loop } from '~/engines/graphics/Loop'
+import { ResizeHandler } from '~/engines/graphics/ResizeHandler'
+import { createLoadingManager } from '~/engines/graphics/loaders/loading'
+import { createBaseScene } from '~/engines/graphics/scene/createBaseScene'
+import { disposeObject3D, disposeRenderer } from '~/engines/graphics/utils/dispose'
 
 export interface GameEngineOptions {
   canvas: HTMLCanvasElement
