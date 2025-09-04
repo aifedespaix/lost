@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    FpsDemoSetup: typeof import('./components/fps-demo/setup.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ThreeCanvas: typeof import('./components/three-canvas/index.vue')['default']
