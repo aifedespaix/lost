@@ -5,9 +5,9 @@
  * configurable limits to prevent unnatural rotations.
  */
 export interface FpsCameraOptions {
-  /** Initial yaw angle in radians. */
+  /** Initial yaw angle in radians. Defaults to 0 (looking along -Z). */
   yaw?: number
-  /** Initial pitch angle in radians. */
+  /** Initial pitch angle in radians. Defaults to 0 (level). */
   pitch?: number
   /** Lowest allowed pitch angle in radians. Defaults to -\u03c0/2. */
   minPitch?: number
