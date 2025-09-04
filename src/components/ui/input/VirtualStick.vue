@@ -54,7 +54,7 @@ const thumbStyle = computed(() => ({
 
 <template>
   <div
-    class="virtual-stick"
+    class="virtual-stick pointer-events-auto"
     @touchstart.prevent="handleStart"
     @touchmove.prevent="handleMove"
     @touchend.prevent="handleEnd"
