@@ -18,16 +18,6 @@ export interface FpsLookSystemOptions {
 }
 
 /**
- * Input snapshot extended with optional look deltas.
- */
-interface LookInputState extends InputState {
-  /** Horizontal look delta in radians. */
-  readonly lookX?: number
-  /** Vertical look delta in radians. */
-  readonly lookY?: number
-}
-
-/**
  * Creates a system applying look deltas to a first-person camera.
  *
  * The system consumes `lookX` and `lookY` values from the {@link InputEngine}
@@ -42,7 +32,7 @@ export function createFpsLookSystem(options: FpsLookSystemOptions): System {
   target.rotation.order = 'YXZ'
 
   return () => {
-    const state = input.snapshot() as LookInputState
+    const state: InputState = input.snapshot()
     const dx = state.lookX ?? 0
     const dy = state.lookY ?? 0
     if (dx === 0 && dy === 0)
