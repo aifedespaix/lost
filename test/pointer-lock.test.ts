@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { usePointerLock } from '~/composables/usePointerLock'
 
 describe('usePointerLock', () => {
   it('handles request and exit and tracks lock state', () => {
