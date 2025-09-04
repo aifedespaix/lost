@@ -28,16 +28,6 @@ export interface FpsMoveSystemOptions {
 }
 
 /**
- * Input snapshot extended with optional analogue movement axes.
- */
-interface MoveInputState extends InputState {
-  /** Horizontal movement axis in the range [-1,1]. */
-  readonly moveX?: number
-  /** Vertical movement axis in the range [-1,1]. */
-  readonly moveY?: number
-}
-
-/**
  * Creates a system applying first-person character movement.
  *
  * Movement is derived from `moveX`/`moveY` axes or, when absent, from the
@@ -52,7 +42,7 @@ export function createFpsMoveSystem(options: FpsMoveSystemOptions): System {
   const world = new Vector3()
 
   return (dt: number) => {
-    const state = input.snapshot() as MoveInputState
+    const state: InputState = input.snapshot()
     const { actions } = state
 
     const moveX = state.moveX ?? ((actions[Action.MoveRight] ? 1 : 0) - (actions[Action.MoveLeft] ? 1 : 0))

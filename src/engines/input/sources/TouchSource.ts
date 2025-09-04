@@ -5,7 +5,9 @@
  * is called. Small jitter is ignored using a configurable threshold to avoid
  * unintended camera shake. Default scrolling behaviour is prevented while the
  * source is active.
- */
+*/
+import type { LookSource } from '../types'
+
 export interface TouchSourceOptions {
   /** Multiplier applied to movement deltas. */
   readonly sensitivity?: number
@@ -15,7 +17,7 @@ export interface TouchSourceOptions {
   readonly jitterThreshold?: number
 }
 
-export class TouchSource {
+export class TouchSource implements LookSource {
   private emit: ((deltaX: number, deltaY: number) => void) | null = null
   private target: EventTarget | null = null
   private readonly sensitivity: number

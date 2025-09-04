@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import DebugOverlay from '~/dev/DebugOverlay.vue'
+import { GamepadSource } from '~/engines/input/sources/GamepadSource'
 import { KeyboardSource } from '~/engines/input/sources/KeyboardSource'
 import { MouseSource } from '~/engines/input/sources/MouseSource'
 import { TouchSource } from '~/engines/input/sources/TouchSource'
-import { GamepadSource } from '~/engines/input/sources/GamepadSource'
-import { Action, type InputSource } from '~/engines/input/types'
+import { Action } from '~/engines/input/types'
+import type { InputSource, MoveSource } from '~/engines/input/types'
 
 const MOUSE_LOOK_SENSITIVITY = 0.002
 const TOUCH_LOOK_SENSITIVITY = 0.002
@@ -14,8 +15,6 @@ const showDebug = import.meta.env.DEV
 const hasTouch = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0
 
 const engine = useThreeEngine()
-
-const look = reactive({ x: 0, y: 0 })
 const move = reactive({ x: 0, y: 0 })
 
 const isLocked = ref(false)
@@ -24,18 +23,18 @@ useEventListener(document, 'pointerlockchange', () => {
 })
 
 const mobileSource: InputSource & {
-  trigger(action: Action, pressed: boolean): void
+  trigger: (action: Action, pressed: boolean) => void
 } = (() => {
   let emit: ((action: Action, pressed: boolean) => void) | null = null
   return {
-    attach(e) {
+    attach: (e) => {
       emit = e
     },
-    detach() {
+    detach: () => {
       emit = null
     },
-    poll() {},
-    trigger(action, pressed) {
+    poll: () => {},
+    trigger: (action, pressed) => {
       emit?.(action, pressed)
     },
   }
@@ -51,47 +50,25 @@ onMounted(() => {
   input.registerSource(
     new GamepadSource({
       onLook(dx, dy) {
-        look.x += dx * GAMEPAD_LOOK_SENSITIVITY
-        look.y += dy * GAMEPAD_LOOK_SENSITIVITY
+        input.addLook(dx * GAMEPAD_LOOK_SENSITIVITY, dy * GAMEPAD_LOOK_SENSITIVITY)
       },
     }),
   )
 
-  mouse = new MouseSource()
-  mouse.attach((dx, dy) => {
-    look.x += dx * MOUSE_LOOK_SENSITIVITY
-    look.y += dy * MOUSE_LOOK_SENSITIVITY
-  }, window)
+  mouse = new MouseSource({ sensitivity: MOUSE_LOOK_SENSITIVITY })
+  input.registerLookSource(mouse)
 
   if (hasTouch) {
-    touch = new TouchSource()
-    touch.attach((dx, dy) => {
-      look.x += dx * TOUCH_LOOK_SENSITIVITY
-      look.y += dy * TOUCH_LOOK_SENSITIVITY
-    }, window)
+    touch = new TouchSource({ sensitivity: TOUCH_LOOK_SENSITIVITY })
+    input.registerLookSource(touch)
     input.registerSource(mobileSource)
+    input.registerMoveSource({
+      emit: null,
+      attach: (e) => { this.emit = e },
+      detach: () => { this.emit = null },
+      poll: () => { this.emit?.(move.x, move.y) },
+    } as MoveSource)
   }
-
-  const baseSnapshot = input.snapshot.bind(input)
-  input.snapshot = () => {
-    const state = baseSnapshot() as any
-    if (look.x !== 0 || look.y !== 0) {
-      state.lookX = look.x
-      state.lookY = look.y
-      look.x = 0
-      look.y = 0
-    }
-    if (hasTouch) {
-      state.moveX = move.x
-      state.moveY = move.y
-    }
-    return state
-  }
-})
-
-onBeforeUnmount(() => {
-  mouse?.detach()
-  touch?.detach()
 })
 
 function handleStick(x: number, y: number): void {

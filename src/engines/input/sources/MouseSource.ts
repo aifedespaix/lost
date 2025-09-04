@@ -4,7 +4,9 @@
  * Movement is reported via the provided callback when {@link poll} is invoked.
  * Values are accumulated from `mousemove` events and scaled by sensitivity.
  * Optional Y-axis inversion is supported to match user preference.
- */
+*/
+import type { LookSource } from '../types'
+
 export interface MouseSourceOptions {
   /** Scalar applied to movement deltas. */
   readonly sensitivity?: number
@@ -12,7 +14,7 @@ export interface MouseSourceOptions {
   readonly invertY?: boolean
 }
 
-export class MouseSource {
+export class MouseSource implements LookSource {
   private emit: ((deltaX: number, deltaY: number) => void) | null = null
   private target: EventTarget | null = null
   private readonly sensitivity: number

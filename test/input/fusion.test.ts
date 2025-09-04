@@ -3,6 +3,7 @@ import { InputEngine } from '~/engines/input/InputEngine'
 import { KeyboardSource } from '~/engines/input/sources/KeyboardSource'
 import { MouseSource } from '~/engines/input/sources/MouseSource'
 import { Action } from '~/engines/input/types'
+import type { MoveSource } from '~/engines/input/types'
 
 // Utility to toggle pointer lock in tests.
 function setPointerLock(locked: boolean): void {
@@ -14,29 +15,9 @@ describe('keyboard and mouse fusion', () => {
   it('merges keyboard actions with inverted mouse look', () => {
     const engine = new InputEngine()
     engine.registerSource(new KeyboardSource())
-    engine.start()
-
-    const look = { x: 0, y: 0 }
     const mouse = new MouseSource({ invertY: true })
-    mouse.attach((dx, dy) => {
-      look.x += dx
-      look.y += dy
-    }, window)
-
-    // integrate look deltas into engine snapshots
-    const baseSnapshot = engine.snapshot.bind(engine)
-    engine.snapshot = () => {
-      const snap = baseSnapshot()
-      mouse.poll()
-      const state: any = { ...snap }
-      if (look.x !== 0 || look.y !== 0) {
-        state.lookX = look.x
-        state.lookY = look.y
-        look.x = 0
-        look.y = 0
-      }
-      return state
-    }
+    engine.registerLookSource(mouse)
+    engine.start()
 
     setPointerLock(true)
 
@@ -47,13 +28,35 @@ describe('keyboard and mouse fusion', () => {
     Object.defineProperty(move, 'movementY', { value: 3 })
     window.dispatchEvent(move)
 
-    const snap = engine.snapshot() as any
+    const snap = engine.snapshot()
     expect(snap.actions[Action.MoveForward]).toBe(true)
     expect(snap.lookX).toBe(5)
     expect(snap.lookY).toBe(-3)
 
     engine.stop()
-    mouse.detach()
+  })
+
+  it('captures analogue movement values', () => {
+    const engine = new InputEngine()
+    const source: MoveSource = {
+      emit: null,
+      attach(fn: (x: number, y: number) => void) {
+        this.emit = fn
+      },
+      detach() {
+        this.emit = null
+      },
+      poll() {
+        this.emit?.(0.5, -0.25)
+      },
+    }
+    engine.registerMoveSource(source)
+    engine.start()
+
+    const snap = engine.snapshot()
+    expect(snap.moveX).toBeCloseTo(0.5)
+    expect(snap.moveY).toBeCloseTo(-0.25)
+
+  engine.stop()
   })
 })
-
